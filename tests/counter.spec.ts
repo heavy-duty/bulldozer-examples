@@ -2,8 +2,7 @@ import { Provider, setProvider, web3, workspace } from "@project-serum/anchor";
 import { assert } from "chai";
 
 describe("Counter", () => {
-  const provider = Provider.local();
-  setProvider(provider);
+  setProvider(Provider.env());
   const application = workspace.Counter;
   const counter = web3.Keypair.generate();
 
@@ -11,7 +10,7 @@ describe("Counter", () => {
     await application.rpc.init({
       accounts: {
         counter: counter.publicKey,
-        authority: provider.wallet.publicKey,
+        authority: application.provider.wallet.publicKey,
         systemProgram: web3.SystemProgram.programId,
       },
       signers: [counter],
