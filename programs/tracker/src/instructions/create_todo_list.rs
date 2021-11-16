@@ -8,7 +8,7 @@ pub struct CreateTodoList<'info>{
   pub authority: Signer<'info>,
     #[account(
     init,
-    space = 8 + 232,
+    space = 8 + 112,
     payer = authority,
   )]
   pub todo_list: Box<Account<'info,TodoList>>,

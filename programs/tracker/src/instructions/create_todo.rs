@@ -9,7 +9,7 @@ pub struct CreateTodo<'info>{
   pub authority: Signer<'info>,
     #[account(
     init,
-    space = 8 + 113,
+    space = 8 + 265,
     payer = authority,
   )]
   pub todo: Box<Account<'info,Todo>>,

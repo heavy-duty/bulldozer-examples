@@ -83,20 +83,20 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "body",
-            "type": "string"
-          },
-          {
-            "name": "checked",
-            "type": "bool"
-          },
-          {
             "name": "authority",
             "type": "publicKey"
           },
           {
             "name": "todoList",
             "type": "publicKey"
+          },
+          {
+            "name": "body",
+            "type": "string"
+          },
+          {
+            "name": "checked",
+            "type": "bool"
           }
         ]
       }
@@ -107,12 +107,12 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "name",
-            "type": "string"
-          },
-          {
             "name": "authority",
             "type": "publicKey"
+          },
+          {
+            "name": "name",
+            "type": "string"
           }
         ]
       }

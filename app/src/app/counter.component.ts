@@ -66,10 +66,7 @@ export class CounterComponent {
   constructor(
     private readonly _walletStore: WalletStore,
     private readonly _counterStore: CounterStore
-  ) {
-    this.counters$.subscribe((a) => console.log(a));
-    this._counterStore.state$.subscribe((a) => console.log(a));
-  }
+  ) {}
 
   onReload() {
     this._counterStore.reload();

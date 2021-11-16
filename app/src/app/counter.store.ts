@@ -50,14 +50,13 @@ export class CounterStore extends ComponentStore<ViewModel> {
         this._reader$.pipe(
           filter((reader): reader is Program => reader !== null),
           concatMap((reader) =>
-            defer(() => {
-              console.log(reader, walletPublicKey.toBase58());
-              return from(
+            defer(() =>
+              from(
                 reader.account['counter'].all([
                   { memcmp: { offset: 8, bytes: walletPublicKey.toBase58() } },
                 ])
-              );
-            }).pipe(
+              )
+            ).pipe(
               tapResponse(
                 (counters) =>
                   this.patchState({
