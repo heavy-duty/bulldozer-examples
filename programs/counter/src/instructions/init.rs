@@ -5,7 +5,7 @@ use crate::collections::Counter;
 pub struct Init<'info>{
   #[account(
     init,
-    space = 8 + 2,
+    space = 8 + 2 + 32,
     payer = authority,
   )]
   pub counter: Box<Account<'info,Counter>>,
