@@ -4,4 +4,5 @@ use anchor_lang::prelude::*;
 pub struct Counter {
   pub authority: Pubkey,
   pub data: u16,
+  pub bump: u8
 }

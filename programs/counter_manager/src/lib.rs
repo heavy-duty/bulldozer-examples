@@ -14,7 +14,7 @@ pub mod counter_manager {
   pub fn increment(ctx: Context<Increment>) -> ProgramResult {
     instructions::increment::handler(ctx)
   }
-  pub fn init(ctx: Context<Init>) -> ProgramResult {
-    instructions::init::handler(ctx)
+  pub fn init(ctx: Context<Init>, bump: u8) -> ProgramResult {
+    instructions::init::handler(ctx, bump)
   }
 }

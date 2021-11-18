@@ -25,7 +25,7 @@ import {
   getSolletWallet,
 } from '@solana/wallet-adapter-wallets';
 
-import * as counterIdl from '../assets/json/counter.json';
+import * as counterManagerIdl from '../assets/json/counter_manager.json';
 import * as trackerIdl from '../assets/json/tracker.json';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
@@ -87,7 +87,7 @@ import {
       useValue: {
         counterManager: {
           id: environment.counterManagerId,
-          idl: counterIdl,
+          idl: counterManagerIdl,
         },
         tracker: {
           id: environment.trackerId,

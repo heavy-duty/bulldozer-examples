@@ -1,6 +1,6 @@
 {
   "version": "0.0.0",
-  "name": "counter",
+  "name": "counter_manager",
   "instructions": [
     {
       "name": "increment",
@@ -24,7 +24,7 @@
         {
           "name": "counter",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "authority",
@@ -37,7 +37,12 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "bump",
+          "type": "u8"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -53,9 +58,16 @@
           {
             "name": "data",
             "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
     }
-  ]
+  ],
+  "metadata": {
+    "address": "F6A5UyESh3TQkKGjc2wx4tCVe1SZZyZnmMBW7iWmKPcw"
+  }
 }

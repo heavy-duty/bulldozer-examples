@@ -1,22 +1,37 @@
-import { Provider, setProvider, web3, workspace } from "@project-serum/anchor";
+import {
+  Provider,
+  setProvider,
+  web3,
+  workspace,
+  utils,
+} from "@project-serum/anchor";
 import { assert } from "chai";
 
 describe("Counter Manager", () => {
   setProvider(Provider.env());
   const counterManager = workspace.CounterManager;
-  const counter = web3.Keypair.generate();
+  let counterPublicKey: web3.PublicKey, counterBump: number;
+
+  before(async () => {
+    [counterPublicKey, counterBump] = await web3.PublicKey.findProgramAddress(
+      [
+        utils.bytes.utf8.encode("counter"),
+        counterManager.provider.wallet.publicKey.toBuffer(),
+      ],
+      counterManager.programId
+    );
+  });
 
   it("should init", async () => {
-    await counterManager.rpc.init({
+    await counterManager.rpc.init(counterBump, {
       accounts: {
-        counter: counter.publicKey,
+        counter: counterPublicKey,
         authority: counterManager.provider.wallet.publicKey,
         systemProgram: web3.SystemProgram.programId,
       },
-      signers: [counter],
     });
     const account = await counterManager.account.counter.fetch(
-      counter.publicKey
+      counterPublicKey
     );
     assert.equal(account.data, 0);
   });
@@ -25,11 +40,11 @@ describe("Counter Manager", () => {
     await counterManager.rpc.increment({
       accounts: {
         authority: counterManager.provider.wallet.publicKey,
-        counter: counter.publicKey,
+        counter: counterPublicKey,
       },
     });
     const account = await counterManager.account.counter.fetch(
-      counter.publicKey
+      counterPublicKey
     );
     assert.equal(account.data, 1);
   });

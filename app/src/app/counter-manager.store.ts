@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { WalletStore } from '@heavy-duty/wallet-adapter';
 import { ProgramStore } from '@heavy-duty/ng-anchor';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { Program } from '@project-serum/anchor';
+import { Program, utils } from '@project-serum/anchor';
 import { Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
 import { BehaviorSubject, combineLatest, defer, from, Observable } from 'rxjs';
 import { concatMap, filter, switchMap } from 'rxjs/operators';
@@ -81,27 +81,34 @@ export class CounterManagerStore extends ComponentStore<ViewModel> {
       this._writer$.pipe(isNotNullOrUndefined),
       action$,
     ]).pipe(
-      concatMap(([walletPublicKey, writer]) => {
-        const counter = Keypair.generate();
-
-        return defer(() =>
+      concatMap(([walletPublicKey, writer]) =>
+        defer(() =>
           from(
-            writer.rpc['init']({
-              accounts: {
-                counter: counter.publicKey,
-                authority: walletPublicKey,
-                systemProgram: SystemProgram.programId,
-              },
-              signers: [counter],
-            })
+            PublicKey.findProgramAddress(
+              [utils.bytes.utf8.encode('counter'), walletPublicKey.toBuffer()],
+              writer.programId
+            )
           )
         ).pipe(
+          concatMap(([counterPublicKey, counterBump]) =>
+            defer(() =>
+              from(
+                writer.rpc['init'](counterBump, {
+                  accounts: {
+                    counter: counterPublicKey,
+                    authority: walletPublicKey,
+                    systemProgram: SystemProgram.programId,
+                  },
+                })
+              )
+            )
+          ),
           tapResponse(
             () => this.reload(),
             (error) => console.log(error)
           )
-        );
-      })
+        )
+      )
     )
   );
 
