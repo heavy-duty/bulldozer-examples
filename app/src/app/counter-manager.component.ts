@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { WalletStore } from '@heavy-duty/wallet-adapter';
 
-import { CounterStore } from './counter.store';
+import { CounterManagerStore } from './counter-manager.store';
 
 @Component({
   selector: 'app-counter',
   template: `
     <header>
-      <h1>Counter</h1>
+      <h1>Counter Manager</h1>
     </header>
     <main>
       <section>
@@ -56,27 +56,27 @@ import { CounterStore } from './counter.store';
       </section>
     </main>
   `,
-  providers: [CounterStore],
+  providers: [CounterManagerStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CounterComponent {
-  readonly counters$ = this._counterStore.counters$;
+export class CounterManagerComponent {
+  readonly counters$ = this._counterManagerStore.counters$;
   readonly connected$ = this._walletStore.connected$;
 
   constructor(
     private readonly _walletStore: WalletStore,
-    private readonly _counterStore: CounterStore
+    private readonly _counterManagerStore: CounterManagerStore
   ) {}
 
   onReload() {
-    this._counterStore.reload();
+    this._counterManagerStore.reload();
   }
 
   onInitCounter() {
-    this._counterStore.initCounter();
+    this._counterManagerStore.initCounter();
   }
 
   onIncrementCounter(counterId: string) {
-    this._counterStore.incrementCounter(counterId);
+    this._counterManagerStore.incrementCounter(counterId);
   }
 }

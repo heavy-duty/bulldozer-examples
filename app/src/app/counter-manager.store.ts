@@ -27,11 +27,11 @@ const initialState: ViewModel = {
 };
 
 @Injectable()
-export class CounterStore extends ComponentStore<ViewModel> {
+export class CounterManagerStore extends ComponentStore<ViewModel> {
   private readonly _reload = new BehaviorSubject(null);
   readonly reload$ = this._reload.asObservable();
-  private readonly _reader$ = this._programStore.getReader('counter');
-  private readonly _writer$ = this._programStore.getWriter('counter');
+  private readonly _reader$ = this._programStore.getReader('counterManager');
+  private readonly _writer$ = this._programStore.getWriter('counterManager');
   readonly counters$ = this.select(({ counters }) => counters);
 
   constructor(

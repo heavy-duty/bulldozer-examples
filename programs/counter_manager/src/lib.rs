@@ -5,10 +5,10 @@ mod instructions;
 
 use instructions::*;
 
-declare_id!("ABxpQTckk4jR1oZ3kFzbUNTcvZfE3TP7nBhecFhysjGy");
+declare_id!("F6A5UyESh3TQkKGjc2wx4tCVe1SZZyZnmMBW7iWmKPcw");
 
 #[program]
-pub mod counter {
+pub mod counter_manager {
   use super::*;
 
   pub fn increment(ctx: Context<Increment>) -> ProgramResult {

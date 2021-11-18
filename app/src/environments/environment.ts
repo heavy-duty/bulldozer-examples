@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  counterProgramId: 'ABxpQTckk4jR1oZ3kFzbUNTcvZfE3TP7nBhecFhysjGy',
-  trackerProgramId: '6qFzbvt1B1jkgTuYdRqgAsoJNqeM7bVkuN71BMmzmSSS',
+  counterManagerId: 'F6A5UyESh3TQkKGjc2wx4tCVe1SZZyZnmMBW7iWmKPcw',
+  trackerId: 'Gwu1VAUjSbWRv7DpuqRjsJabYbXvSAyoqDW7tb5r3FVm',
 };
 
 /*

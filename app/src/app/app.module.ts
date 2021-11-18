@@ -29,7 +29,7 @@ import * as counterIdl from '../assets/json/counter.json';
 import * as trackerIdl from '../assets/json/tracker.json';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
-import { CounterComponent } from './counter.component';
+import { CounterManagerComponent } from './counter-manager.component';
 import { NavigationComponent } from './navigation.component';
 import {
   CreateTodoComponent,
@@ -41,7 +41,7 @@ import {
   declarations: [
     AppComponent,
     NavigationComponent,
-    CounterComponent,
+    CounterManagerComponent,
     TrackerComponent,
     CreateTodoListComponent,
     CreateTodoComponent,
@@ -50,7 +50,7 @@ import {
     BrowserModule,
     BrowserAnimationsModule,
     RouterModule.forRoot([
-      { path: 'counter', component: CounterComponent },
+      { path: 'counter', component: CounterManagerComponent },
       { path: 'tracker', component: TrackerComponent },
     ]),
     RouterModule,
@@ -85,12 +85,12 @@ import {
     {
       provide: PROGRAM_CONFIGS,
       useValue: {
-        counter: {
-          id: environment.counterProgramId,
+        counterManager: {
+          id: environment.counterManagerId,
           idl: counterIdl,
         },
         tracker: {
-          id: environment.trackerProgramId,
+          id: environment.trackerId,
           idl: trackerIdl,
         },
       },
