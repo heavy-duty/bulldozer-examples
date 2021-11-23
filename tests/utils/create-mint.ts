@@ -9,28 +9,29 @@ export const createMint = async (
     await provider.connection.getMinimumBalanceForRentExemption(
       MintLayout.span
     );
-  let tx = new web3.Transaction();
 
-  // Allocate mint
-  tx.add(
-    web3.SystemProgram.createAccount({
-      programId: TOKEN_PROGRAM_ID,
-      space: MintLayout.span,
-      fromPubkey: provider.wallet.publicKey,
-      newAccountPubkey: tokenMint.publicKey,
-      lamports: lamportsForMint,
-    })
+  // Allocate mint and wallet account
+  await provider.send(
+    new web3.Transaction()
+      .add(
+        web3.SystemProgram.createAccount({
+          programId: TOKEN_PROGRAM_ID,
+          space: MintLayout.span,
+          fromPubkey: provider.wallet.publicKey,
+          newAccountPubkey: tokenMint.publicKey,
+          lamports: lamportsForMint,
+        })
+      )
+      .add(
+        Token.createInitMintInstruction(
+          TOKEN_PROGRAM_ID,
+          tokenMint.publicKey,
+          6,
+          provider.wallet.publicKey,
+          provider.wallet.publicKey
+        )
+      ),
+    [tokenMint]
   );
-  // Allocate wallet account
-  tx.add(
-    Token.createInitMintInstruction(
-      TOKEN_PROGRAM_ID,
-      tokenMint.publicKey,
-      6,
-      provider.wallet.publicKey,
-      provider.wallet.publicKey
-    )
-  );
-  await provider.send(tx, [tokenMint]);
   return tokenMint.publicKey;
 };

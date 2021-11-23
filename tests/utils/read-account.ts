@@ -5,10 +5,8 @@ export const readAccount = async (
   accountPublicKey: web3.PublicKey,
   provider: Provider
 ): Promise<[AccountInfo, string]> => {
-  const tokenInfoLol = await provider.connection.getAccountInfo(
-    accountPublicKey
-  );
-  const data = Buffer.from(tokenInfoLol.data);
+  const tokenInfo = await provider.connection.getAccountInfo(accountPublicKey);
+  const data = Buffer.from(tokenInfo.data);
   const accountInfo: AccountInfo = AccountLayout.decode(data);
 
   const amount = (accountInfo.amount as any as Buffer).readBigUInt64LE();
