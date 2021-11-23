@@ -3,7 +3,12 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
 #[derive(Accounts)]
-#[instruction(check_id: u64, check_bump: u8, escrow_bump: u8, amount: u64)]
+#[instruction(
+  check_id: u64, 
+  check_bump: u8, 
+  escrow_bump: u8, 
+  total: u64
+)]
 pub struct CreateCheck<'info> {
   #[account(
     init,
@@ -35,12 +40,14 @@ pub fn handler(
   check_id: u64,
   check_bump: u8,
   escrow_bump: u8,
-  amount: u64,
+  total: u64,
 ) -> ProgramResult {
   ctx.accounts.check.authority = ctx.accounts.authority.key();
   ctx.accounts.check.id = check_id;
   ctx.accounts.check.escrow = ctx.accounts.escrow.key();
-  ctx.accounts.check.amount = amount;
+  ctx.accounts.check.total = total;
+  ctx.accounts.check.payed = 0;
+  ctx.accounts.check.debt = total;
   ctx.accounts.check.token_mint = ctx.accounts.token_mint.key();
   ctx.accounts.check.check_bump = check_bump;
   ctx.accounts.check.escrow_bump = escrow_bump;

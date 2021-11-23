@@ -16,8 +16,12 @@ pub mod splitdacheck {
     check_id: u64,
     check_bump: u8,
     escrow_bump: u8,
-    amount: u64,
+    total: u64,
   ) -> ProgramResult {
-    instructions::create_check::handler(ctx, check_id, check_bump, escrow_bump, amount)
+    instructions::create_check::handler(ctx, check_id, check_bump, escrow_bump, total)
+  }
+
+  pub fn submit_partial_payment(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult {
+    instructions::submit_partial_payment::handler(ctx, amount)
   }
 }
