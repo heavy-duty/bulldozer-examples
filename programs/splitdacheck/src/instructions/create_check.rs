@@ -27,7 +27,7 @@ pub struct CreateCheck<'info> {
     token::authority=check,
   )]
   pub escrow: Box<Account<'info, TokenAccount>>,
-  pub token_mint: Account<'info, Mint>,
+  pub token_mint: Box<Account<'info, Mint>>,
   pub token_program: Program<'info, Token>,
   pub rent: Sysvar<'info, Rent>,
   pub system_program: Program<'info, System>,

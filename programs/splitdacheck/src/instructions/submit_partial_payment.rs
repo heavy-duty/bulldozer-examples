@@ -9,15 +9,15 @@ pub struct SubmitPartialPayment<'info> {
   pub check: Box<Account<'info, Check>>,
   #[account(mut)]
   pub escrow: Box<Account<'info, TokenAccount>>,
-  pub token_mint: Account<'info, Mint>,
-  pub token_program: Program<'info, Token>,
-  pub authority: Signer<'info>,
+  pub token_mint: Box<Account<'info, Mint>>,
   #[account(
     mut,
     constraint=payer.owner == authority.key(),
     constraint=payer.mint == token_mint.key()
   )]
-  payer: Account<'info, TokenAccount>,
+  pub payer: Box<Account<'info, TokenAccount>>,
+  pub token_program: Program<'info, Token>,
+  pub authority: Signer<'info>,
 }
 
 pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult {
