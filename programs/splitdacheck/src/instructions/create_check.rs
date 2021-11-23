@@ -47,7 +47,6 @@ pub fn handler(
   ctx.accounts.check.escrow = ctx.accounts.escrow.key();
   ctx.accounts.check.total = total;
   ctx.accounts.check.payed = 0;
-  ctx.accounts.check.debt = total;
   ctx.accounts.check.token_mint = ctx.accounts.token_mint.key();
   ctx.accounts.check.check_bump = check_bump;
   ctx.accounts.check.escrow_bump = escrow_bump;

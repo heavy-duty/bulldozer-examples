@@ -21,7 +21,6 @@ pub struct SubmitPartialPayment<'info> {
 }
 
 pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult {
-  ctx.accounts.check.debt -= amount;
   ctx.accounts.check.payed += amount;
 
   // Transfer amount to escrow

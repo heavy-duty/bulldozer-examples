@@ -7,7 +7,6 @@ pub struct Check {
   pub escrow: Pubkey,
   pub total: u64,
   pub payed: u64,
-  pub debt: u64,
   pub token_mint: Pubkey,
   pub check_bump: u8,
   pub escrow_bump: u8,
