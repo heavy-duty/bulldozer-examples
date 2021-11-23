@@ -92,7 +92,7 @@ describe("SplitDaCheck", () => {
         accounts: {
           check: checkPublicKey,
           escrow: escrowPublicKey,
-          associatedToken: aliceWallet,
+          payer: aliceWallet,
           authority: alice.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
           tokenMint: mintAddress,
@@ -122,7 +122,7 @@ describe("SplitDaCheck", () => {
         accounts: {
           check: checkPublicKey,
           escrow: escrowPublicKey,
-          associatedToken: bobWallet,
+          payer: bobWallet,
           authority: bob.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
           tokenMint: mintAddress,
@@ -207,7 +207,7 @@ describe("SplitDaCheck", () => {
         accounts: {
           check: checkPublicKey,
           escrow: escrowPublicKey,
-          associatedToken: aliceWallet,
+          payer: aliceWallet,
           authority: alice.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
           tokenMint: mintAddress,
@@ -237,7 +237,7 @@ describe("SplitDaCheck", () => {
         accounts: {
           check: checkPublicKey,
           escrow: escrowPublicKey,
-          associatedToken: bobWallet,
+          payer: bobWallet,
           authority: bob.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
           tokenMint: mintAddress,
@@ -315,7 +315,7 @@ describe("SplitDaCheck", () => {
         accounts: {
           check: checkPublicKey,
           escrow: escrowPublicKey,
-          associatedToken: aliceWallet,
+          payer: aliceWallet,
           authority: alice.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
           tokenMint: mintAddress,

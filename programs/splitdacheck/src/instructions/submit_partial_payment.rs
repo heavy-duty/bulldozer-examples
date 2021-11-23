@@ -14,10 +14,10 @@ pub struct SubmitPartialPayment<'info> {
   pub authority: Signer<'info>,
   #[account(
     mut,
-    constraint=associated_token.owner == authority.key(),
-    constraint=associated_token.mint == token_mint.key()
+    constraint=payer.owner == authority.key(),
+    constraint=payer.mint == token_mint.key()
   )]
-  associated_token: Account<'info, TokenAccount>,
+  payer: Account<'info, TokenAccount>,
 }
 
 pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult {
@@ -34,7 +34,7 @@ pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult
   let cpi_ctx = CpiContext::new_with_signer(
     ctx.accounts.token_program.to_account_info(),
     Transfer {
-      from: ctx.accounts.associated_token.to_account_info(),
+      from: ctx.accounts.payer.to_account_info(),
       to: ctx.accounts.escrow.to_account_info(),
       authority: ctx.accounts.authority.to_account_info(),
     },
