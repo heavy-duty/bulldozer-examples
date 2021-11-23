@@ -1,6 +1,7 @@
 [programs.localnet]
-counter_manager = "F6A5UyESh3TQkKGjc2wx4tCVe1SZZyZnmMBW7iWmKPcw"
-tracker = "Gwu1VAUjSbWRv7DpuqRjsJabYbXvSAyoqDW7tb5r3FVm"
+counter_manager = "J15Nxu5dcMEyeQFymh1qvk3XzSLZcLyr9mCmCc8PSEhJ"
+tracker = "FkrQyn9eLfWt4VBPHTbufJcydZBdSAUUJRBzVfEaF9GV"
+splitdacheck = "9EFLnZiD7Hrb41KsMNW6JTAGFpyZtHb2zAHFUhPQztPi"
 
 [registry]
 url = "https://anchor.projectserum.com"

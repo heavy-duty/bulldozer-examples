@@ -5,7 +5,7 @@ mod instructions;
 
 use instructions::*;
 
-declare_id!("Gwu1VAUjSbWRv7DpuqRjsJabYbXvSAyoqDW7tb5r3FVm");
+declare_id!("FkrQyn9eLfWt4VBPHTbufJcydZBdSAUUJRBzVfEaF9GV");
 
 #[program]
 pub mod tracker {

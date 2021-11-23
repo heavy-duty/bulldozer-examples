@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@solana/spl-token": "^0.1.8",
     "@types/chai": "^4.2.22",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.10.5",
