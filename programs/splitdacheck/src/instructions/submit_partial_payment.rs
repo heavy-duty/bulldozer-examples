@@ -11,7 +11,6 @@ pub struct SubmitPartialPayment<'info> {
   pub escrow: Box<Account<'info, TokenAccount>>,
   pub token_mint: Account<'info, Mint>,
   pub token_program: Program<'info, Token>,
-  #[account(mut)]
   pub authority: Signer<'info>,
   #[account(
     mut,
