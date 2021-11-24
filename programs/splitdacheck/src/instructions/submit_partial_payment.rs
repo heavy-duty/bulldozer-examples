@@ -1,12 +1,19 @@
 use crate::collections::Check;
 use anchor_lang::prelude::*;
-use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::token::{
+  close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer,
+};
 
 #[derive(Accounts)]
 #[instruction(amount: u64)]
 pub struct SubmitPartialPayment<'info> {
   #[account(mut)]
   pub check: Box<Account<'info, Check>>,
+  #[account(
+    mut,
+    constraint=check.authority == check_authority.key()
+  )]
+  pub check_authority: AccountInfo<'info>,
   #[account(mut)]
   pub vault: Box<Account<'info, TokenAccount>>,
   pub token_mint: Box<Account<'info, Mint>>,
@@ -42,7 +49,6 @@ pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult
     amount,
   )?;
 
-  // Transfer to check authority if payment is complete
   if ctx.accounts.check.payed == ctx.accounts.check.total {
     let check_id = ctx.accounts.check.id.to_le_bytes();
     let seeds = &[
@@ -64,6 +70,16 @@ pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult
       ),
       ctx.accounts.check.total,
     )?;
+
+    close_account(CpiContext::new_with_signer(
+      ctx.accounts.token_program.to_account_info(),
+      CloseAccount {
+        account: ctx.accounts.vault.to_account_info(),
+        destination: ctx.accounts.check_authority.to_account_info(),
+        authority: ctx.accounts.check.to_account_info(),
+      },
+      signer,
+    ))?;
   }
 
   Ok(())

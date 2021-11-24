@@ -20,7 +20,6 @@ describe("SplitDaCheck", () => {
   const provider = Provider.env();
 
   let checkPublicKey: web3.PublicKey, checkBump: number;
-  let checkSignerPublicKey: web3.PublicKey;
   let vaultPublicKey: web3.PublicKey, vaultBump: number;
   let mintAddress: web3.PublicKey;
   let vendor: web3.Keypair, vendorWallet: web3.PublicKey;
@@ -103,6 +102,7 @@ describe("SplitDaCheck", () => {
         {
           accounts: {
             check: checkPublicKey,
+            checkAuthority: vendor.publicKey,
             vault: vaultPublicKey,
             payer: aliceWallet,
             authority: alice.publicKey,
@@ -126,7 +126,7 @@ describe("SplitDaCheck", () => {
       assert.equal(vaultBalancePost, alicePart.toString());
     });
 
-    it("should submit Bob payment", async () => {
+    it("should submit Bob payment and close vault", async () => {
       // arrange
       const paymentAmount = new BN(bobPart);
       // act
@@ -135,6 +135,7 @@ describe("SplitDaCheck", () => {
         {
           accounts: {
             check: checkPublicKey,
+            checkAuthority: vendor.publicKey,
             vault: vaultPublicKey,
             payer: bobWallet,
             authority: bob.publicKey,
@@ -153,8 +154,10 @@ describe("SplitDaCheck", () => {
       assert.equal(bobBalancePost, (bobInitialBalance - bobPart).toString());
       const [, vendorBalancePost] = await readAccount(vendorWallet, provider);
       assert.equal(vendorBalancePost, (alicePart + bobPart).toString());
-      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
-      assert.equal(vaultBalancePost, (0).toString());
+      const vaultWalletAccount = await provider.connection.getAccountInfo(
+        vaultPublicKey
+      );
+      assert.equal(vaultWalletAccount, null);
     });
   });
 
@@ -230,6 +233,7 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
+          checkAuthority: vendor.publicKey,
           vault: vaultPublicKey,
           payer: aliceWallet,
           authority: alice.publicKey,
@@ -258,6 +262,7 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
+          checkAuthority: vendor.publicKey,
           vault: vaultPublicKey,
           payer: bobWallet,
           authority: bob.publicKey,
@@ -274,8 +279,10 @@ describe("SplitDaCheck", () => {
       assert.equal(bobBalancePost, (bobInitialBalance - bobPart).toString());
       const [, vendorBalancePost] = await readAccount(vendorWallet, provider);
       assert.equal(vendorBalancePost, (alicePart + bobPart).toString());
-      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
-      assert.equal(vaultBalancePost, (0).toString());
+      const vaultWalletAccount = await provider.connection.getAccountInfo(
+        vaultPublicKey
+      );
+      assert.equal(vaultWalletAccount, null);
     });
   });
 
@@ -292,10 +299,6 @@ describe("SplitDaCheck", () => {
       );
       [vaultPublicKey, vaultBump] = await web3.PublicKey.findProgramAddress(
         [utils.bytes.utf8.encode("vault"), checkPublicKey.toBuffer()],
-        splitDaCheck.programId
-      );
-      [checkSignerPublicKey] = await web3.PublicKey.findProgramAddress(
-        [checkPublicKey.toBuffer()],
         splitDaCheck.programId
       );
       mintAddress = await createMint(provider);
@@ -348,13 +351,13 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
+          checkAuthority: vendor.publicKey,
           vault: vaultPublicKey,
           payer: aliceWallet,
           authority: alice.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
           tokenMint: mintAddress,
           receiver: vendorWallet,
-          checkSigner: checkSignerPublicKey,
         },
         signers: [alice],
       });
@@ -368,8 +371,10 @@ describe("SplitDaCheck", () => {
       );
       const [, vendorBalancePost] = await readAccount(vendorWallet, provider);
       assert.equal(vendorBalancePost, alicePart.toString());
-      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
-      assert.equal(vaultBalancePost, (0).toString());
+      const vaultWalletAccount = await provider.connection.getAccountInfo(
+        vaultPublicKey
+      );
+      assert.equal(vaultWalletAccount, null);
     });
   });
 });
