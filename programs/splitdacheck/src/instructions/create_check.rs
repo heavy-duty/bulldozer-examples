@@ -15,7 +15,7 @@ pub struct CreateCheck<'info> {
     payer = authority,
     seeds=[b"check", check_id.to_le_bytes().as_ref()],
     bump = check_bump,
-    space = 300
+    space = 130
   )]
   pub check: Box<Account<'info, Check>>,
   #[account(
