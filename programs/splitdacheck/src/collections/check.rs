@@ -4,10 +4,10 @@ use anchor_lang::prelude::*;
 pub struct Check {
   pub authority: Pubkey,
   pub id: u64,
-  pub escrow: Pubkey,
+  pub vault: Pubkey,
   pub total: u64,
   pub payed: u64,
   pub token_mint: Pubkey,
   pub check_bump: u8,
-  pub escrow_bump: u8,
+  pub vault_bump: u8,
 }

@@ -21,7 +21,7 @@ describe("SplitDaCheck", () => {
 
   let checkPublicKey: web3.PublicKey, checkBump: number;
   let checkSignerPublicKey: web3.PublicKey;
-  let escrowPublicKey: web3.PublicKey, escrowBump: number;
+  let vaultPublicKey: web3.PublicKey, vaultBump: number;
   let mintAddress: web3.PublicKey;
   let vendor: web3.Keypair, vendorWallet: web3.PublicKey;
   let alice: web3.Keypair, aliceWallet: web3.PublicKey;
@@ -42,8 +42,8 @@ describe("SplitDaCheck", () => {
         [utils.bytes.utf8.encode("check"), checkId.toBuffer("le", 8)],
         splitDaCheck.programId
       );
-      [escrowPublicKey, escrowBump] = await web3.PublicKey.findProgramAddress(
-        [utils.bytes.utf8.encode("escrow"), checkPublicKey.toBuffer()],
+      [vaultPublicKey, vaultBump] = await web3.PublicKey.findProgramAddress(
+        [utils.bytes.utf8.encode("vault"), checkPublicKey.toBuffer()],
         splitDaCheck.programId
       );
       mintAddress = await createMint(provider);
@@ -71,12 +71,12 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.createCheck(
         checkId,
         checkBump,
-        escrowBump,
+        vaultBump,
         checkTotal,
         {
           accounts: {
             check: checkPublicKey,
-            escrow: escrowPublicKey,
+            vault: vaultPublicKey,
             authority: vendor.publicKey,
             systemProgram: web3.SystemProgram.programId,
             rent: web3.SYSVAR_RENT_PUBKEY,
@@ -103,7 +103,7 @@ describe("SplitDaCheck", () => {
         {
           accounts: {
             check: checkPublicKey,
-            escrow: escrowPublicKey,
+            vault: vaultPublicKey,
             payer: aliceWallet,
             authority: alice.publicKey,
             tokenProgram: TOKEN_PROGRAM_ID,
@@ -122,11 +122,8 @@ describe("SplitDaCheck", () => {
         aliceBalancePost,
         (aliceInitialBalance - alicePart).toString()
       );
-      const [, escrowBalancePost] = await readAccount(
-        escrowPublicKey,
-        provider
-      );
-      assert.equal(escrowBalancePost, alicePart.toString());
+      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
+      assert.equal(vaultBalancePost, alicePart.toString());
     });
 
     it("should submit Bob payment", async () => {
@@ -138,7 +135,7 @@ describe("SplitDaCheck", () => {
         {
           accounts: {
             check: checkPublicKey,
-            escrow: escrowPublicKey,
+            vault: vaultPublicKey,
             payer: bobWallet,
             authority: bob.publicKey,
             tokenProgram: TOKEN_PROGRAM_ID,
@@ -156,11 +153,8 @@ describe("SplitDaCheck", () => {
       assert.equal(bobBalancePost, (bobInitialBalance - bobPart).toString());
       const [, vendorBalancePost] = await readAccount(vendorWallet, provider);
       assert.equal(vendorBalancePost, (alicePart + bobPart).toString());
-      const [, escrowBalancePost] = await readAccount(
-        escrowPublicKey,
-        provider
-      );
-      assert.equal(escrowBalancePost, (0).toString());
+      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
+      assert.equal(vaultBalancePost, (0).toString());
     });
   });
 
@@ -177,8 +171,8 @@ describe("SplitDaCheck", () => {
         [utils.bytes.utf8.encode("check"), checkId.toBuffer("le", 8)],
         splitDaCheck.programId
       );
-      [escrowPublicKey, escrowBump] = await web3.PublicKey.findProgramAddress(
-        [utils.bytes.utf8.encode("escrow"), checkPublicKey.toBuffer()],
+      [vaultPublicKey, vaultBump] = await web3.PublicKey.findProgramAddress(
+        [utils.bytes.utf8.encode("vault"), checkPublicKey.toBuffer()],
         splitDaCheck.programId
       );
       mintAddress = await createMint(provider);
@@ -206,12 +200,12 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.createCheck(
         checkId,
         checkBump,
-        escrowBump,
+        vaultBump,
         checkTotal,
         {
           accounts: {
             check: checkPublicKey,
-            escrow: escrowPublicKey,
+            vault: vaultPublicKey,
             authority: vendor.publicKey,
             systemProgram: web3.SystemProgram.programId,
             rent: web3.SYSVAR_RENT_PUBKEY,
@@ -236,7 +230,7 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
-          escrow: escrowPublicKey,
+          vault: vaultPublicKey,
           payer: aliceWallet,
           authority: alice.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -253,11 +247,8 @@ describe("SplitDaCheck", () => {
         aliceBalancePost,
         (aliceInitialBalance - alicePart).toString()
       );
-      const [, escrowBalancePost] = await readAccount(
-        escrowPublicKey,
-        provider
-      );
-      assert.equal(escrowBalancePost, alicePart.toString());
+      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
+      assert.equal(vaultBalancePost, alicePart.toString());
     });
 
     it("should submit Bob payment", async () => {
@@ -267,7 +258,7 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
-          escrow: escrowPublicKey,
+          vault: vaultPublicKey,
           payer: bobWallet,
           authority: bob.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -283,11 +274,8 @@ describe("SplitDaCheck", () => {
       assert.equal(bobBalancePost, (bobInitialBalance - bobPart).toString());
       const [, vendorBalancePost] = await readAccount(vendorWallet, provider);
       assert.equal(vendorBalancePost, (alicePart + bobPart).toString());
-      const [, escrowBalancePost] = await readAccount(
-        escrowPublicKey,
-        provider
-      );
-      assert.equal(escrowBalancePost, (0).toString());
+      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
+      assert.equal(vaultBalancePost, (0).toString());
     });
   });
 
@@ -302,8 +290,8 @@ describe("SplitDaCheck", () => {
         [utils.bytes.utf8.encode("check"), checkId.toBuffer("le", 8)],
         splitDaCheck.programId
       );
-      [escrowPublicKey, escrowBump] = await web3.PublicKey.findProgramAddress(
-        [utils.bytes.utf8.encode("escrow"), checkPublicKey.toBuffer()],
+      [vaultPublicKey, vaultBump] = await web3.PublicKey.findProgramAddress(
+        [utils.bytes.utf8.encode("vault"), checkPublicKey.toBuffer()],
         splitDaCheck.programId
       );
       [checkSignerPublicKey] = await web3.PublicKey.findProgramAddress(
@@ -330,12 +318,12 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.createCheck(
         checkId,
         checkBump,
-        escrowBump,
+        vaultBump,
         checkTotal,
         {
           accounts: {
             check: checkPublicKey,
-            escrow: escrowPublicKey,
+            vault: vaultPublicKey,
             authority: vendor.publicKey,
             systemProgram: web3.SystemProgram.programId,
             rent: web3.SYSVAR_RENT_PUBKEY,
@@ -360,7 +348,7 @@ describe("SplitDaCheck", () => {
       await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
-          escrow: escrowPublicKey,
+          vault: vaultPublicKey,
           payer: aliceWallet,
           authority: alice.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -380,11 +368,8 @@ describe("SplitDaCheck", () => {
       );
       const [, vendorBalancePost] = await readAccount(vendorWallet, provider);
       assert.equal(vendorBalancePost, alicePart.toString());
-      const [, escrowBalancePost] = await readAccount(
-        escrowPublicKey,
-        provider
-      );
-      assert.equal(escrowBalancePost, (0).toString());
+      const [, vaultBalancePost] = await readAccount(vaultPublicKey, provider);
+      assert.equal(vaultBalancePost, (0).toString());
     });
   });
 });

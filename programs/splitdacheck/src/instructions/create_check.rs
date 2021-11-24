@@ -6,7 +6,7 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 #[instruction(
   check_id: u64, 
   check_bump: u8, 
-  escrow_bump: u8, 
+  vault_bump: u8, 
   total: u64
 )]
 pub struct CreateCheck<'info> {
@@ -21,12 +21,12 @@ pub struct CreateCheck<'info> {
   #[account(
     init,
     payer = authority,
-    seeds=[b"escrow", check.key().as_ref()],
-    bump = escrow_bump,
+    seeds=[b"vault", check.key().as_ref()],
+    bump = vault_bump,
     token::mint=token_mint,
     token::authority=check,
   )]
-  pub escrow: Box<Account<'info, TokenAccount>>,
+  pub vault: Box<Account<'info, TokenAccount>>,
   pub token_mint: Box<Account<'info, Mint>>,
   #[account(
     mut,
@@ -45,16 +45,16 @@ pub fn handler(
   ctx: Context<CreateCheck>,
   check_id: u64,
   check_bump: u8,
-  escrow_bump: u8,
+  vault_bump: u8,
   total: u64,
 ) -> ProgramResult {
   ctx.accounts.check.authority = ctx.accounts.authority.key();
   ctx.accounts.check.id = check_id;
-  ctx.accounts.check.escrow = ctx.accounts.escrow.key();
+  ctx.accounts.check.vault = ctx.accounts.vault.key();
   ctx.accounts.check.total = total;
   ctx.accounts.check.payed = 0;
   ctx.accounts.check.token_mint = ctx.accounts.token_mint.key();
   ctx.accounts.check.check_bump = check_bump;
-  ctx.accounts.check.escrow_bump = escrow_bump;
+  ctx.accounts.check.vault_bump = vault_bump;
   Ok(())
 }

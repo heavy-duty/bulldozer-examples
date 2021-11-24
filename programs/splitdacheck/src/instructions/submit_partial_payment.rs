@@ -8,7 +8,7 @@ pub struct SubmitPartialPayment<'info> {
   #[account(mut)]
   pub check: Box<Account<'info, Check>>,
   #[account(mut)]
-  pub escrow: Box<Account<'info, TokenAccount>>,
+  pub vault: Box<Account<'info, TokenAccount>>,
   pub token_mint: Box<Account<'info, Mint>>,
   #[account(
     mut,
@@ -29,13 +29,13 @@ pub struct SubmitPartialPayment<'info> {
 pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult {
   ctx.accounts.check.payed += amount;
 
-  // Transfer amount to escrow
+  // Transfer amount to vault
   transfer(
     CpiContext::new(
       ctx.accounts.token_program.to_account_info(),
       Transfer {
         from: ctx.accounts.payer.to_account_info(),
-        to: ctx.accounts.escrow.to_account_info(),
+        to: ctx.accounts.vault.to_account_info(),
         authority: ctx.accounts.authority.to_account_info(),
       },
     ),
@@ -56,7 +56,7 @@ pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult
       CpiContext::new_with_signer(
         ctx.accounts.token_program.to_account_info(),
         Transfer {
-          from: ctx.accounts.escrow.to_account_info(),
+          from: ctx.accounts.vault.to_account_info(),
           to: ctx.accounts.receiver.to_account_info(),
           authority: ctx.accounts.check.to_account_info(),
         },
