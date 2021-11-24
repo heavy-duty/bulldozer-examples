@@ -28,6 +28,12 @@ pub struct CreateCheck<'info> {
   )]
   pub escrow: Box<Account<'info, TokenAccount>>,
   pub token_mint: Box<Account<'info, Mint>>,
+  #[account(
+    mut,
+    constraint=receiver.owner == authority.key(),
+    constraint=receiver.mint == token_mint.key()
+  )]
+  pub receiver: Box<Account<'info, TokenAccount>>,
   pub token_program: Program<'info, Token>,
   pub rent: Sysvar<'info, Rent>,
   pub system_program: Program<'info, System>,

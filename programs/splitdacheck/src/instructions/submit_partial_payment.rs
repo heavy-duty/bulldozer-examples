@@ -16,6 +16,12 @@ pub struct SubmitPartialPayment<'info> {
     constraint=payer.mint == token_mint.key()
   )]
   pub payer: Box<Account<'info, TokenAccount>>,
+  #[account(
+    mut,
+    constraint=receiver.owner == check.authority,
+    constraint=receiver.mint == token_mint.key()
+  )]
+  pub receiver: Box<Account<'info, TokenAccount>>,
   pub token_program: Program<'info, Token>,
   pub authority: Signer<'info>,
 }
@@ -24,24 +30,41 @@ pub fn handler(ctx: Context<SubmitPartialPayment>, amount: u64) -> ProgramResult
   ctx.accounts.check.payed += amount;
 
   // Transfer amount to escrow
-  let check_id_bytes = ctx.accounts.check.id.to_le_bytes();
-  let seeds = &[
-    b"check",
-    check_id_bytes.as_ref(),
-    &[ctx.accounts.check.check_bump],
-  ];
-  let signer = &[&seeds[..]];
-  let cpi_ctx = CpiContext::new_with_signer(
-    ctx.accounts.token_program.to_account_info(),
-    Transfer {
-      from: ctx.accounts.payer.to_account_info(),
-      to: ctx.accounts.escrow.to_account_info(),
-      authority: ctx.accounts.authority.to_account_info(),
-    },
-    signer,
-  );
-  transfer(cpi_ctx, amount)?;
+  transfer(
+    CpiContext::new(
+      ctx.accounts.token_program.to_account_info(),
+      Transfer {
+        from: ctx.accounts.payer.to_account_info(),
+        to: ctx.accounts.escrow.to_account_info(),
+        authority: ctx.accounts.authority.to_account_info(),
+      },
+    ),
+    amount,
+  )?;
 
   // Transfer to check authority if payment is complete
+  if ctx.accounts.check.payed == ctx.accounts.check.total {
+    let check_id = ctx.accounts.check.id.to_le_bytes();
+    let seeds = &[
+      b"check",
+      check_id.as_ref(),
+      &[ctx.accounts.check.check_bump],
+    ];
+    let signer = &[&seeds[..]];
+
+    transfer(
+      CpiContext::new_with_signer(
+        ctx.accounts.token_program.to_account_info(),
+        Transfer {
+          from: ctx.accounts.escrow.to_account_info(),
+          to: ctx.accounts.receiver.to_account_info(),
+          authority: ctx.accounts.check.to_account_info(),
+        },
+        signer,
+      ),
+      ctx.accounts.check.total,
+    )?;
+  }
+
   Ok(())
 }
