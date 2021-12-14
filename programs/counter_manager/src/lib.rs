@@ -5,7 +5,7 @@ mod instructions;
 
 use instructions::*;
 
-declare_id!("J15Nxu5dcMEyeQFymh1qvk3XzSLZcLyr9mCmCc8PSEhJ");
+declare_id!("4SXjVQ2iU8iticsh7VCmnCCuko9VLbshmXdVDW2nEi5X");
 
 #[program]
 pub mod counter_manager {

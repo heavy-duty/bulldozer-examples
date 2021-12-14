@@ -27,6 +27,7 @@ import {
 
 import * as counterManagerIdl from '../assets/json/counter_manager.json';
 import * as trackerIdl from '../assets/json/tracker.json';
+import * as splitDaCheckIdl from '../assets/json/splitdacheck.json';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { CounterManagerComponent } from './counter-manager.component';
@@ -92,6 +93,10 @@ import {
         tracker: {
           id: environment.trackerId,
           idl: trackerIdl,
+        },
+        splitDaCheck: {
+          id: environment.splitDaCheckId,
+          idl: splitDaCheckIdl,
         },
       },
     },

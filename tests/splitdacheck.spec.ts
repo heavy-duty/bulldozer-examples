@@ -97,22 +97,19 @@ describe("SplitDaCheck", () => {
       // arrange
       const paymentAmount = new BN(alicePart);
       // act
-      const signature = await splitDaCheck.rpc.submitPartialPayment(
-        paymentAmount,
-        {
-          accounts: {
-            check: checkPublicKey,
-            checkAuthority: vendor.publicKey,
-            vault: vaultPublicKey,
-            payer: aliceWallet,
-            authority: alice.publicKey,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            tokenMint: mintAddress,
-            receiver: vendorWallet,
-          },
-          signers: [alice],
-        }
-      );
+      const signature = await splitDaCheck.rpc.submitPayment(paymentAmount, {
+        accounts: {
+          check: checkPublicKey,
+          checkAuthority: vendor.publicKey,
+          vault: vaultPublicKey,
+          payer: aliceWallet,
+          authority: alice.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          tokenMint: mintAddress,
+          receiver: vendorWallet,
+        },
+        signers: [alice],
+      });
       await provider.connection.confirmTransaction(signature);
       // assert
       const account = await splitDaCheck.account.check.fetch(checkPublicKey);
@@ -130,22 +127,19 @@ describe("SplitDaCheck", () => {
       // arrange
       const paymentAmount = new BN(bobPart);
       // act
-      const signature = await splitDaCheck.rpc.submitPartialPayment(
-        paymentAmount,
-        {
-          accounts: {
-            check: checkPublicKey,
-            checkAuthority: vendor.publicKey,
-            vault: vaultPublicKey,
-            payer: bobWallet,
-            authority: bob.publicKey,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            tokenMint: mintAddress,
-            receiver: vendorWallet,
-          },
-          signers: [bob],
-        }
-      );
+      const signature = await splitDaCheck.rpc.submitPayment(paymentAmount, {
+        accounts: {
+          check: checkPublicKey,
+          checkAuthority: vendor.publicKey,
+          vault: vaultPublicKey,
+          payer: bobWallet,
+          authority: bob.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          tokenMint: mintAddress,
+          receiver: vendorWallet,
+        },
+        signers: [bob],
+      });
       await provider.connection.confirmTransaction(signature);
       // assert
       const account = await splitDaCheck.account.check.fetch(checkPublicKey);
@@ -230,7 +224,7 @@ describe("SplitDaCheck", () => {
       // arrange
       const paymentAmount = new BN(alicePart);
       // act
-      await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
+      await splitDaCheck.rpc.submitPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
           checkAuthority: vendor.publicKey,
@@ -259,7 +253,7 @@ describe("SplitDaCheck", () => {
       // arrange
       const paymentAmount = new BN(bobPart);
       // act
-      await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
+      await splitDaCheck.rpc.submitPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
           checkAuthority: vendor.publicKey,
@@ -348,7 +342,7 @@ describe("SplitDaCheck", () => {
       // arrange
       const paymentAmount = new BN(alicePart);
       // act
-      await splitDaCheck.rpc.submitPartialPayment(paymentAmount, {
+      await splitDaCheck.rpc.submitPayment(paymentAmount, {
         accounts: {
           check: checkPublicKey,
           checkAuthority: vendor.publicKey,

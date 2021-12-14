@@ -4,8 +4,9 @@
 
 export const environment = {
   production: false,
-  counterManagerId: 'F6A5UyESh3TQkKGjc2wx4tCVe1SZZyZnmMBW7iWmKPcw',
-  trackerId: 'Gwu1VAUjSbWRv7DpuqRjsJabYbXvSAyoqDW7tb5r3FVm',
+  counterManagerId: 'J15Nxu5dcMEyeQFymh1qvk3XzSLZcLyr9mCmCc8PSEhJ',
+  trackerId: 'FkrQyn9eLfWt4VBPHTbufJcydZBdSAUUJRBzVfEaF9GV',
+  splitDaCheckId: '9EFLnZiD7Hrb41KsMNW6JTAGFpyZtHb2zAHFUhPQztPi',
 };
 
 /*

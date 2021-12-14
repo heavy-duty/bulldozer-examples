@@ -1,6 +1,6 @@
-use crate::collections::Check;
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::token::{Mint, TokenAccount, Token};
+use crate::collections::Check;
 
 #[derive(Accounts)]
 #[instruction(
@@ -13,7 +13,7 @@ pub struct CreateCheck<'info> {
   #[account(
     init,
     payer = authority,
-    seeds=[b"check", check_id.to_le_bytes().as_ref()],
+    seeds = [b"check", check_id.to_le_bytes().as_ref()],
     bump = check_bump,
     space = 130
   )]
@@ -39,22 +39,4 @@ pub struct CreateCheck<'info> {
   pub system_program: Program<'info, System>,
   #[account(mut)]
   pub authority: Signer<'info>,
-}
-
-pub fn handler(
-  ctx: Context<CreateCheck>,
-  check_id: u64,
-  check_bump: u8,
-  vault_bump: u8,
-  total: u64,
-) -> ProgramResult {
-  ctx.accounts.check.authority = ctx.accounts.authority.key();
-  ctx.accounts.check.id = check_id;
-  ctx.accounts.check.vault = ctx.accounts.vault.key();
-  ctx.accounts.check.total = total;
-  ctx.accounts.check.payed = 0;
-  ctx.accounts.check.token_mint = ctx.accounts.token_mint.key();
-  ctx.accounts.check.check_bump = check_bump;
-  ctx.accounts.check.vault_bump = vault_bump;
-  Ok(())
 }
