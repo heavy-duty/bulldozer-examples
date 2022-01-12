@@ -48,4 +48,17 @@ describe("Counter Manager", () => {
     );
     assert.equal(account.data, 1);
   });
+
+  it("should delete", async () => {
+    await counterManager.rpc.delete({
+      accounts: {
+        authority: counterManager.provider.wallet.publicKey,
+        counter: counterPublicKey,
+      },
+    });
+    const account = await counterManager.account.counter.fetchNullable(
+      counterPublicKey
+    );
+    assert.equal(account, null);
+  });
 });

@@ -5,7 +5,7 @@ mod instructions;
 
 use instructions::*;
 
-declare_id!("9EFLnZiD7Hrb41KsMNW6JTAGFpyZtHb2zAHFUhPQztPi");
+declare_id!("BbZeA3aEiEx1ky6BamZha8FX5tDGmBagk5YYmbYQD1Lg");
 
 #[program]
 pub mod splitdacheck {

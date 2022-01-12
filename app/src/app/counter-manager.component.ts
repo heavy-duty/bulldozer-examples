@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { WalletStore } from '@heavy-duty/wallet-adapter';
-
 import { CounterManagerStore } from './counter-manager.store';
 
 @Component({
@@ -27,7 +26,7 @@ import { CounterManagerStore } from './counter-manager.store';
 
         <mat-list role="list">
           <mat-list-item
-            *ngFor="let counter of counters$ | async"
+            *ngIf="counter$ | async as counter"
             role="listitem"
             class="mat-elevation-z4"
             style="height: auto; width: 500px; margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: rgba(255, 255, 255, 0.05)"
@@ -45,9 +44,12 @@ import { CounterManagerStore } from './counter-manager.store';
                 <button
                   mat-mini-fab
                   color="accent"
-                  (click)="onIncrementCounter(counter.id)"
+                  (click)="onIncrementCounter()"
                 >
                   <mat-icon>add</mat-icon>
+                </button>
+                <button mat-mini-fab color="accent" (click)="onDeleteCounter()">
+                  <mat-icon>delete</mat-icon>
                 </button>
               </div>
             </div>
@@ -60,7 +62,7 @@ import { CounterManagerStore } from './counter-manager.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CounterManagerComponent {
-  readonly counters$ = this._counterManagerStore.counters$;
+  readonly counter$ = this._counterManagerStore.counter$;
   readonly connected$ = this._walletStore.connected$;
 
   constructor(
@@ -76,7 +78,11 @@ export class CounterManagerComponent {
     this._counterManagerStore.initCounter();
   }
 
-  onIncrementCounter(counterId: string) {
-    this._counterManagerStore.incrementCounter(counterId);
+  onIncrementCounter() {
+    this._counterManagerStore.incrementCounter();
+  }
+
+  onDeleteCounter() {
+    this._counterManagerStore.deleteCounter();
   }
 }

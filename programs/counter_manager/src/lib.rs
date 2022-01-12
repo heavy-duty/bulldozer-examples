@@ -17,4 +17,7 @@ pub mod counter_manager {
   pub fn init(ctx: Context<Init>, bump: u8) -> ProgramResult {
     instructions::init::handler(ctx, bump)
   }
+  pub fn delete(ctx: Context<Delete>) -> ProgramResult {
+    instructions::delete::handler(ctx)
+  }
 }
