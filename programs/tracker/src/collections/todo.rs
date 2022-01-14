@@ -6,4 +6,6 @@ pub struct Todo {
   pub todo_list: Pubkey,
   pub body: String,
   pub checked: bool,
+  pub created_at: i64,
+  pub updated_at: i64,
 }

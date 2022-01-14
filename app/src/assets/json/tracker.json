@@ -1,5 +1,5 @@
 {
-  "version": "0.0.0",
+  "version": "0.1.0",
   "name": "tracker",
   "instructions": [
     {
@@ -13,7 +13,7 @@
         {
           "name": "todoList",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -23,10 +23,28 @@
       ],
       "args": [
         {
-          "name": "name",
-          "type": "string"
+          "name": "arguments",
+          "type": {
+            "defined": "CreateTodoListArguments"
+          }
         }
       ]
+    },
+    {
+      "name": "deleteTodoList",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "todoList",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
     },
     {
       "name": "toggleTodo",
@@ -40,6 +58,11 @@
           "name": "todo",
           "isMut": true,
           "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": []
@@ -49,7 +72,7 @@
       "accounts": [
         {
           "name": "todoList",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -66,14 +89,42 @@
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
         {
-          "name": "body",
-          "type": "string"
+          "name": "arguments",
+          "type": {
+            "defined": "CreateTodoArguments"
+          }
         }
       ]
+    },
+    {
+      "name": "deleteTodo",
+      "accounts": [
+        {
+          "name": "todoList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "todo",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -97,6 +148,14 @@
           {
             "name": "checked",
             "type": "bool"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
           }
         ]
       }
@@ -113,12 +172,90 @@
           {
             "name": "name",
             "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "quantityOfTodos",
+            "type": "u16"
           }
         ]
       }
     }
   ],
+  "types": [
+    {
+      "name": "CreateTodoArguments",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "body",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateTodoListArguments",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "CantDeleteTodoListWithTodos",
+      "msg": "Cant delete todo list with todos"
+    },
+    {
+      "code": 6001,
+      "name": "TodoListDoesntMatchTodo",
+      "msg": "Todo list provided doesnt match todo"
+    },
+    {
+      "code": 6002,
+      "name": "UnauthorizedToCreateTodo",
+      "msg": "Unauthorized to create todo"
+    },
+    {
+      "code": 6003,
+      "name": "UnauthorizedToToggleTodo",
+      "msg": "Unauthorized to toggle todo"
+    },
+    {
+      "code": 6004,
+      "name": "UnauthorizedToDeleteTodo",
+      "msg": "Unauthorized to delete todo"
+    },
+    {
+      "code": 6005,
+      "name": "UnauthorizedToDeleteTodoList",
+      "msg": "Unauthorized to delete todo list"
+    }
+  ],
   "metadata": {
-    "address": "Gwu1VAUjSbWRv7DpuqRjsJabYbXvSAyoqDW7tb5r3FVm"
+    "address": "4FiqmNTgPxvXZLfiuUuJkF28tdupFz66HnMQRTjmUS7r"
   }
 }

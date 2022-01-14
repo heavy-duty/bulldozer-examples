@@ -1,12 +1,27 @@
 import { Injectable } from '@angular/core';
 import { ProgramStore } from '@heavy-duty/ng-anchor';
-import { ConnectionStore, WalletStore } from '@heavy-duty/wallet-adapter';
+import { WalletStore } from '@heavy-duty/wallet-adapter';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { utils } from '@project-serum/anchor';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
-import { BehaviorSubject, combineLatest, defer, EMPTY, from, of } from 'rxjs';
-import { catchError, concatMap, map, switchMap } from 'rxjs/operators';
-import { fromAccountChange } from './from-account.change';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  concatMap,
+  defer,
+  EMPTY,
+  filter,
+  from,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
+import { ConnectionStore } from './connection-store';
+import { isNotNullOrUndefined } from './operators';
 
 export interface Counter {
   id: string;
@@ -30,8 +45,8 @@ const initialState: ViewModel = {
 export class CounterManagerStore extends ComponentStore<ViewModel> {
   private readonly _reload = new BehaviorSubject(null);
   readonly reload$ = this._reload.asObservable();
-  readonly reader$ = this._programStore.getReader('counterManager');
-  readonly writer$ = this._programStore.getWriter('counterManager');
+  private readonly _reader$ = this._programStore.getReader('counterManager');
+  private readonly _writer$ = this._programStore.getWriter('counterManager');
   readonly counter$ = this.select(({ counter }) => counter);
   readonly counterPublicKey$ = this.select(
     ({ counterPublicKey }) => counterPublicKey
@@ -47,7 +62,7 @@ export class CounterManagerStore extends ComponentStore<ViewModel> {
   }
 
   readonly loadCounterAddress = this.effect(() =>
-    combineLatest([this._walletStore.publicKey$, this.reader$]).pipe(
+    combineLatest([this._walletStore.publicKey$, this._reader$]).pipe(
       switchMap(([walletPublicKey, reader]) => {
         if (!walletPublicKey || !reader) {
           return of([null, null]);
@@ -74,7 +89,7 @@ export class CounterManagerStore extends ComponentStore<ViewModel> {
   );
 
   readonly loadCounter = this.effect(() =>
-    combineLatest([this.reader$, this.counterPublicKey$, this.reload$]).pipe(
+    combineLatest([this._reader$, this.counterPublicKey$, this.reload$]).pipe(
       switchMap(([reader, counterPublicKey]) => {
         if (!reader || !counterPublicKey) {
           return of(null);
@@ -102,17 +117,15 @@ export class CounterManagerStore extends ComponentStore<ViewModel> {
   );
 
   readonly watchCounter = this.effect(() =>
-    combineLatest([
-      this._connectionStore.connection$,
-      this.counterPublicKey$,
-      this.reader$,
-    ]).pipe(
-      switchMap(([connection, counterPublicKey, reader]) => {
-        if (!connection || !counterPublicKey || !reader) {
+    combineLatest([this.counterPublicKey$, this._reader$]).pipe(
+      switchMap(([counterPublicKey, reader]) => {
+        if (!counterPublicKey || !reader) {
           return of(null);
         }
 
-        return fromAccountChange(connection, counterPublicKey).pipe(
+        return this._connectionStore.onAccountChanges(counterPublicKey).pipe(
+          isNotNullOrUndefined,
+          filter(({ publicKey }) => publicKey.equals(counterPublicKey)),
           map(({ accountInfo }) => {
             if (accountInfo.lamports === 0) {
               return null;
@@ -131,55 +144,63 @@ export class CounterManagerStore extends ComponentStore<ViewModel> {
           })
         );
       }),
-      tapResponse(
-        (counter) => this.patchState({ counter }),
-        (error) => console.error(error)
-      )
+      tap((counter) => this.patchState({ counter }))
     )
   );
 
   readonly initCounter = this.effect(($) =>
-    combineLatest([
-      this._walletStore.publicKey$,
-      this.writer$,
-      this.counterPublicKey$,
-      this.counterBump$,
-      $,
-    ]).pipe(
-      concatMap(([walletPublicKey, writer, counterPublicKey, counterBump]) => {
-        if (!walletPublicKey || !writer || !counterPublicKey || !counterBump) {
-          return of(null);
-        }
-
-        return defer(() =>
-          from(
-            writer.rpc['init'](counterBump, {
-              accounts: {
-                counter: counterPublicKey,
-                authority: walletPublicKey,
-                systemProgram: SystemProgram.programId,
-              },
-            })
+    $.pipe(
+      concatMap(() =>
+        of(null).pipe(
+          withLatestFrom(
+            this._walletStore.publicKey$,
+            this._writer$,
+            this.counterPublicKey$,
+            this.counterBump$
           )
-        ).pipe(
-          catchError((error) => {
-            console.error(error);
-            return EMPTY;
-          })
-        );
-      })
+        )
+      ),
+      concatMap(
+        ([, walletPublicKey, writer, counterPublicKey, counterBump]) => {
+          if (
+            !walletPublicKey ||
+            !writer ||
+            !counterPublicKey ||
+            !counterBump
+          ) {
+            return of(null);
+          }
+
+          return defer(() =>
+            from(
+              writer.rpc['init'](counterBump, {
+                accounts: {
+                  counter: counterPublicKey,
+                  authority: walletPublicKey,
+                  systemProgram: SystemProgram.programId,
+                },
+              })
+            )
+          ).pipe(
+            catchError((error) => {
+              console.error(error);
+              return EMPTY;
+            })
+          );
+        }
+      )
     )
   );
 
-  readonly incrementCounter = this.effect(($) =>
-    combineLatest([
-      this._walletStore.publicKey$,
-      this.writer$,
-      this.counterPublicKey$,
-      $,
-    ]).pipe(
-      concatMap(([walletPublicKey, writer, counterPublicKey]) => {
-        if (!walletPublicKey || !writer || !counterPublicKey) {
+  readonly incrementCounter = this.effect((counterId$: Observable<string>) =>
+    counterId$.pipe(
+      concatMap((counterId) =>
+        of(counterId).pipe(
+          withLatestFrom(this._walletStore.publicKey$, this._writer$)
+        )
+      ),
+      concatMap(([counterId, walletPublicKey, writer]) => {
+        if (!walletPublicKey || !writer || !counterId) {
           return of(null);
         }
 
@@ -187,7 +208,7 @@ export class CounterManagerStore extends ComponentStore<ViewModel> {
           from(
             writer.rpc['increment']({
               accounts: {
-                counter: counterPublicKey,
+                counter: new PublicKey(counterId),
                 authority: walletPublicKey,
               },
             })
@@ -202,14 +223,14 @@ export class CounterManagerStore extends ComponentStore<ViewModel> {
     )
   );
 
-  readonly deleteCounter = this.effect(($) =>
-    combineLatest([
-      this._walletStore.publicKey$,
-      this.writer$,
-      this.counterPublicKey$,
-      $,
-    ]).pipe(
-      concatMap(([walletPublicKey, writer, counterId]) => {
+  readonly deleteCounter = this.effect((counterId$: Observable<string>) =>
+    counterId$.pipe(
+      concatMap((counterId) =>
+        of(counterId).pipe(
+          withLatestFrom(this._walletStore.publicKey$, this._writer$)
+        )
+      ),
+      concatMap(([counterId, walletPublicKey, writer]) => {
         if (!walletPublicKey || !writer || !counterId) {
           return of(null);
         }

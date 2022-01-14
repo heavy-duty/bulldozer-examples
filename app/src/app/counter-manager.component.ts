@@ -44,11 +44,15 @@ import { CounterManagerStore } from './counter-manager.store';
                 <button
                   mat-mini-fab
                   color="accent"
-                  (click)="onIncrementCounter()"
+                  (click)="onIncrementCounter(counter.id)"
                 >
                   <mat-icon>add</mat-icon>
                 </button>
-                <button mat-mini-fab color="accent" (click)="onDeleteCounter()">
+                <button
+                  mat-mini-fab
+                  color="accent"
+                  (click)="onDeleteCounter(counter.id)"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
@@ -78,11 +82,11 @@ export class CounterManagerComponent {
     this._counterManagerStore.initCounter();
   }
 
-  onIncrementCounter() {
-    this._counterManagerStore.incrementCounter();
+  onIncrementCounter(counterId: string) {
+    this._counterManagerStore.incrementCounter(counterId);
   }
 
-  onDeleteCounter() {
-    this._counterManagerStore.deleteCounter();
+  onDeleteCounter(counterId: string) {
+    this._counterManagerStore.deleteCounter(counterId);
   }
 }

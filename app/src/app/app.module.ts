@@ -35,6 +35,7 @@ import { NavigationComponent } from './navigation.component';
 import {
   CreateTodoComponent,
   CreateTodoListComponent,
+  TodoListComponent,
   TrackerComponent,
 } from './tracker.component';
 
@@ -46,6 +47,7 @@ import {
     TrackerComponent,
     CreateTodoListComponent,
     CreateTodoComponent,
+    TodoListComponent,
   ],
   imports: [
     BrowserModule,

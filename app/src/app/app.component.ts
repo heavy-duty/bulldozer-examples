@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProgramStore } from '@heavy-duty/ng-anchor';
-import { ConnectionStore, WalletStore } from '@heavy-duty/wallet-adapter';
+import { WalletStore } from '@heavy-duty/wallet-adapter';
+import { ConnectionStore } from './connection-store';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,7 @@ import { ConnectionStore, WalletStore } from '@heavy-duty/wallet-adapter';
     </app-navigation>
   `,
   styles: [],
-  providers: [WalletStore, ConnectionStore, ProgramStore],
+  providers: [WalletStore, ProgramStore, ConnectionStore],
 })
 export class AppComponent implements OnInit {
   constructor(
