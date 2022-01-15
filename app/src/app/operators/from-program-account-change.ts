@@ -15,21 +15,14 @@ export const fromProgramAccountChange = (
   filters?: GetProgramAccountsFilter[]
 ): Observable<{ keyedAccountInfo: KeyedAccountInfo; context: Context }> =>
   fromEventPattern<{ keyedAccountInfo: KeyedAccountInfo; context: Context }>(
-    (addHandler) => {
-      const id = connection.onProgramAccountChange(
+    (addHandler) =>
+      connection.onProgramAccountChange(
         programId,
         (keyedAccountInfo, context) =>
           addHandler({ keyedAccountInfo, context }),
         commitment,
         filters
-      );
-      console.log('adding ->', id);
-      return id;
-    },
-    (removeHandler, id) => {
-      console.log('removing ->', id);
-      return connection
-        .removeProgramAccountChangeListener(id)
-        .then(removeHandler);
-    }
+      ),
+    (removeHandler, id) =>
+      connection.removeProgramAccountChangeListener(id).then(removeHandler)
   );
