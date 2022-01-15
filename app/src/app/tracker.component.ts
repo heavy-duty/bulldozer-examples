@@ -7,10 +7,6 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { WalletStore } from '@heavy-duty/wallet-adapter';
-import { PublicKey } from '@solana/web3.js';
-import { Subject, takeUntil } from 'rxjs';
-import { environment } from '../environments/environment';
-import { ConnectionStore } from './connection-store';
 import { Todo, TodoList, TrackerStore } from './tracker.store';
 
 @Component({
@@ -177,49 +173,11 @@ export class TrackerComponent {
   readonly todos$ = this._trackerStore.todos$;
   readonly connected$ = this._walletStore.connected$;
 
-  _destroy = new Subject();
-
   constructor(
     private readonly _walletStore: WalletStore,
     private readonly _trackerStore: TrackerStore,
-    private readonly _matDialog: MatDialog,
-    private readonly _connectionStore: ConnectionStore
-  ) {
-    this._connectionStore
-      .onProgramAccountChanges(
-        new PublicKey(environment.trackerId),
-        'confirmed',
-        [
-          {
-            memcmp: {
-              offset: 40,
-              bytes: '4fP8r6rYiJbAizJ7nEpwAGCKCC1UA2Dw7EYjjftmF1hA',
-            },
-          },
-        ]
-      )
-      .pipe(takeUntil(this._destroy))
-      .subscribe((a) => console.log(`#1 ->`, a));
-    this._connectionStore
-      .onProgramAccountChanges(
-        new PublicKey(environment.trackerId),
-        'confirmed',
-        [
-          {
-            memcmp: {
-              offset: 8,
-              bytes: 'BEXbittaED1WKBiKKLrNr8dWVsT17aUoEfwwUU6vjik4',
-            },
-          },
-        ]
-      )
-      .pipe(takeUntil(this._destroy))
-      .subscribe((a) => console.log(`#2 ->`, a));
-  }
-
-  ngOnDestroy() {
-    this._destroy.next(null);
-  }
+    private readonly _matDialog: MatDialog
+  ) {}
 
   onReload() {
     this._trackerStore.reload();

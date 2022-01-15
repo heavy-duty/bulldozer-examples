@@ -5,8 +5,9 @@ import {
   Commitment,
   Connection,
   ConnectionConfig,
-  GetProgramAccountsConfig,
+  DataSizeFilter,
   GetProgramAccountsFilter,
+  MemcmpFilter,
   PublicKey,
 } from '@solana/web3.js';
 import { combineLatest, map, Observable, tap } from 'rxjs';
@@ -27,12 +28,46 @@ interface ConnectionState {
   config: ConnectionConfig;
 }
 
+const hashGetProgramAccountsRequest = (
+  programId: string,
+  filters: GetProgramAccountsFilter[] = []
+) => {
+  const dataSizeFilters = filters
+    .filter((filter): filter is DataSizeFilter => 'dataSize' in filter)
+    .sort((a, b) => a.dataSize - b.dataSize)
+    .map((filter) => `dataSize:${filter.dataSize}`);
+  const memcmpFilters = filters
+    .filter((filter): filter is MemcmpFilter => 'memcmp' in filter)
+    .sort((a, b) => {
+      if (a.memcmp.bytes < b.memcmp.bytes) {
+        return -1;
+      } else if (a.memcmp.bytes > b.memcmp.bytes) {
+        return 1;
+      } else {
+        return 0;
+      }
+    })
+    .sort((a, b) => a.memcmp.offset - b.memcmp.offset)
+    .map((filter) => `memcmp:${filter.memcmp.offset}:${filter.memcmp.bytes}`);
+  return [...dataSizeFilters, ...memcmpFilters].reduce(
+    (hash, filter) => `${hash}+${filter}`,
+    `programId:${programId}`
+  );
+};
+
 @Injectable()
 export class ConnectionStore extends ComponentStore<ConnectionState> {
   readonly connection$ = this.select(({ connection }) => connection);
   readonly endpoint$ = this.select(({ endpoint }) => endpoint);
   readonly config$ = this.select(({ config }) => config);
   private readonly _accountSubscriptions = new Map<
+    string,
+    Observable<{
+      publicKey: PublicKey;
+      accountInfo: AccountInfo<Buffer>;
+    }>
+  >();
+  private readonly _programAcountSubscriptions = new Map<
     string,
     Observable<{
       publicKey: PublicKey;
@@ -115,16 +150,36 @@ export class ConnectionStore extends ComponentStore<ConnectionState> {
       throw Error('Connection not established.');
     }
 
+    const getProgramAccountsRequestHash = hashGetProgramAccountsRequest(
+      programId.toBase58(),
+      filters
+    );
+    const subscription = this._programAcountSubscriptions.get(
+      getProgramAccountsRequestHash
+    );
+
+    if (subscription) {
+      return subscription;
+    }
+
     const programAccountChange$ = fromProgramAccountChange(
       connection,
       programId,
       commitment,
       filters
     ).pipe(
+      shareWhileSubscribed(() =>
+        this._programAcountSubscriptions.delete(getProgramAccountsRequestHash)
+      ),
       map(({ keyedAccountInfo }) => ({
         publicKey: keyedAccountInfo.accountId,
         accountInfo: keyedAccountInfo.accountInfo,
       }))
+    );
+
+    this._programAcountSubscriptions.set(
+      getProgramAccountsRequestHash,
+      programAccountChange$
     );
 
     return programAccountChange$;
