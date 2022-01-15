@@ -208,7 +208,7 @@ export class TrackerStore extends ComponentStore<ViewModel> {
                   }
                 }
               },
-              (error) => console.log(error)
+              (error) => console.error(error)
             )
           );
       })
@@ -293,7 +293,7 @@ export class TrackerStore extends ComponentStore<ViewModel> {
                   todoListId: todo.account['todoList'].toBase58(),
                 }))
               ),
-            (error) => console.log(error)
+            (error) => console.error(error)
           )
         );
       })
